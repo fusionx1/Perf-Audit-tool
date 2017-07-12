@@ -19,9 +19,6 @@ APPSERVER_IP=`echo $APPSERVER | awk '{print $1}'`
 
 gpg2 --card-status > /dev/null
 
-echo $APPSERVER_BINDING_ID;
-echo $APPSERVER_IP;
-
 echo "Fetching Files Info:"
 ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'/files; du -h -d 1 .;exit;bash --login';
 
@@ -30,7 +27,7 @@ ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'/files; b
 ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'/files; find -maxdepth 1 -type d | while read -r dir; do printf "%s:\t" "$dir"; find "$dir" -type f | wc -l; done ;exit;bash --login'
 
 echo "Running Watchdog Logs:"
-ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'; btool drush ws --count=100;exit;bash --login'
+ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'; btool drush ws --count=500 | grep "Error";exit;bash --login'
 
 echo "Fetching New Relic Data:"
 $HOME/Projects/pantheon/terminus/bin/terminus newrelic-data:org $ORG_UUID
@@ -60,3 +57,11 @@ echo "Analyzing Slow Query Logs:"
 
     ssh $DB_SERVER_IP.panth.io -t 'cd /srv/bindings/'$DB_SERVER_BINDING_ID'/logs; pt-query-digest mysqld-slow-query.log;exit;bash --login'
   done
+
+  echo "Fetching Redis Info:"
+  REDIS_CLI=$($HOME/Projects/pantheon/terminus/bin/terminus connection:info $SITENAME.live --format=json| jq .redis_command)
+  REDIS_CLI="${REDIS_CLI%\"}"
+  REDIS_CLI="${REDIS_CLI#\"}"
+  $REDIS_CLI info
+
+ 
