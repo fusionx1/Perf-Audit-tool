@@ -1,14 +1,15 @@
 #!/bin/bash
 SITENAME=$1
-
+TERMINUS_PATH=$HOME/Projects/pantheon/terminus/bin/terminus
 echo "Fetching Organization:"
-ORG_UUID=$($HOME/Projects/pantheon/terminus/bin/terminus site:info $SITENAME --format=json| jq .organization)
+ORG_UUID=$($TERMINUS_PATH site:info $SITENAME --format=json| jq .organization)
 ORG_UUID="${ORG_UUID%\"}"
 ORG_UUID="${ORG_UUID#\"}"
+ORG_UUID='cb3cf68c-77b7-4fa8-b204-dbb322521105'
 echo "ORG UUID:" $ORG_UUID
 
 echo "Fetching URL"
-URL=$($HOME/Projects/pantheon/terminus/bin/terminus env:info $SITENAME.live --format=json| jq .domain)
+URL=$($TERMINUS_PATH env:info $SITENAME.live --format=json| jq .domain)
 URL="${URL%\"}"
 URL="${URL#\"}"
 echo "ENV URL:" $URL
@@ -19,22 +20,28 @@ APPSERVER_IP=`echo $APPSERVER | awk '{print $1}'`
 
 gpg2 --card-status > /dev/null
 
-echo "Fetching Files Info:"
-ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'/files; du -h -d 1 .;exit;bash --login';
+echo "Collecting Log Gists:"
+ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'/files; btool collect_logs;btool forensics;exit;bash --login'
 
-echo "Collecting Logs:"
-ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'/files; btool collect_logs;exit;bash --login'
-ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'/files; find -maxdepth 1 -type d | while read -r dir; do printf "%s:\t" "$dir"; find "$dir" -type f | wc -l; done ;exit;bash --login'
+echo "Running btool info:"
+ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'; btool;exit;bash --login'
 
 echo "Running Watchdog Logs:"
-ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'; btool drush ws --count=500 | grep "Error";exit;bash --login'
+$TERMINUS_PATH remote:drush $SITENAME.live -- ws --count=500 | grep -i “error”
+
+echo "Running Drupal Status:"
+$TERMINUS_PATH remote:drush $SITENAME.live -- st
+
+echo "Fetching Files Info:"
+ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'/files; du -h -d 1 .;exit;bash --login';
+ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'/files; find -maxdepth 1 -type d | while read -r dir; do printf "%s:\t" "$dir"; find "$dir" -type f | wc -l; done ;exit;bash --login'
 
 echo "Fetching New Relic Data:"
-$HOME/Projects/pantheon/terminus/bin/terminus newrelic-data:org $ORG_UUID
-$HOME/Projects/pantheon/terminus/bin/terminus newrelic-data:org $ORG_UUID --overview
+$TERMINUS_PATH newrelic-data:org $ORG_UUID
+$TERMINUS_PATH newrelic-data:org $ORG_UUID --overview
 
 echo "Fetching Heaviest Tables:"
-MYSQL_STRING=$($HOME/Projects/pantheon/terminus/bin/terminus connection:info $SITENAME.live --format=json| jq .mysql_command)
+MYSQL_STRING=$($TERMINUS_PATH connection:info $SITENAME.live --format=json| jq .mysql_command)
 MYSQL_STRING="${MYSQL_STRING%\"}"
 MYSQL_STRING="${MYSQL_STRING#\"}"
 
@@ -43,7 +50,7 @@ $MYSQL_STRING -e "SELECT TABLE_NAME, table_rows, data_length, index_length, roun
 #;";
 
 echo "Fetching Biggest Table Blobs:"
-$HOME/Projects/pantheon/terminus/bin/terminus blob:columns $SITENAME.live
+$TERMINUS_PATH blob:columns $SITENAME.live
 
 echo "Analyzing Slow Query Logs:"
   # Get Db server host and binding id.
@@ -58,10 +65,8 @@ echo "Analyzing Slow Query Logs:"
     ssh $DB_SERVER_IP.panth.io -t 'cd /srv/bindings/'$DB_SERVER_BINDING_ID'/logs; pt-query-digest mysqld-slow-query.log;exit;bash --login'
   done
 
-  echo "Fetching Redis Info:"
-  REDIS_CLI=$($HOME/Projects/pantheon/terminus/bin/terminus connection:info $SITENAME.live --format=json| jq .redis_command)
+  echo "Fetching Redis:"
+  REDIS_CLI=$($TERMINUS_PATH connection:info $SITENAME.live --format=json| jq .redis_command)
   REDIS_CLI="${REDIS_CLI%\"}"
   REDIS_CLI="${REDIS_CLI#\"}"
   $REDIS_CLI info
-
- 
