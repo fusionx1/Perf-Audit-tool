@@ -8,7 +8,7 @@ This tool consolidates all the available tools for the performance audit, from T
 4. In order to run a New Relic report on the slowest performing sites, you need to install the New Relic data Terminus plugin - https://github.com/fusionx1/terminus-get-newrelic
 5. Working mysql client
 6. Working Yubi Key(Tested on gpg2)
-7. Edit init.sh and replace line 6 with your terminus path, you may run `which terminus` on your terminus to give you the path) 
+7. Edit init.sh and replace line 6 with your terminus path, you may run `which terminus` on your terminal to give you the path) 
 
 
 ## Installation
