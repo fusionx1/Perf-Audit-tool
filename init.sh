@@ -1,15 +1,9 @@
 #!/bin/bash
-SITENAME=$1
-TERMINUS_PATH=$HOME/Projects/pantheon/terminus/bin/terminus
-echo "Fetching Organization:"
-ORG_UUID=$($TERMINUS_PATH site:info $SITENAME --format=json| jq .organization)
-ORG_UUID="${ORG_UUID%\"}"
-ORG_UUID="${ORG_UUID#\"}"
-ORG_UUID='cb3cf68c-77b7-4fa8-b204-dbb322521105'
-echo "ORG UUID:" $ORG_UUID
+ORG_UUID=$1
+SITENAME=$2
 
 echo "Fetching URL"
-URL=$($TERMINUS_PATH env:info $SITENAME.live --format=json| jq .domain)
+URL=$($HOME/Projects/pantheon/terminus/bin/terminus env:info $SITENAME.live --format=json| jq .domain)
 URL="${URL%\"}"
 URL="${URL#\"}"
 echo "ENV URL:" $URL
@@ -27,21 +21,21 @@ echo "Running btool info:"
 ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'; btool;exit;bash --login'
 
 echo "Running Watchdog Logs:"
-$TERMINUS_PATH remote:drush $SITENAME.live -- ws --count=500 | grep -i “error”
+$HOME/Projects/pantheon/terminus/bin/terminus remote:drush $SITENAME.live -- ws --count=500 | grep -i “error”
 
 echo "Running Drupal Status:"
-$TERMINUS_PATH remote:drush $SITENAME.live -- st
+$HOME/Projects/pantheon/terminus/bin/terminus remote:drush $SITENAME.live -- st
 
 echo "Fetching Files Info:"
 ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'/files; du -h -d 1 .;exit;bash --login';
 ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'/files; find -maxdepth 1 -type d | while read -r dir; do printf "%s:\t" "$dir"; find "$dir" -type f | wc -l; done ;exit;bash --login'
 
 echo "Fetching New Relic Data:"
-$TERMINUS_PATH newrelic-data:org $ORG_UUID
-$TERMINUS_PATH newrelic-data:org $ORG_UUID --overview
+$HOME/Projects/pantheon/terminus/bin/terminus newrelic-data:org $ORG_UUID
+$HOME/Projects/pantheon/terminus/bin/terminus newrelic-data:org $ORG_UUID --overview
 
 echo "Fetching Heaviest Tables:"
-MYSQL_STRING=$($TERMINUS_PATH connection:info $SITENAME.live --format=json| jq .mysql_command)
+MYSQL_STRING=$($HOME/Projects/pantheon/terminus/bin/terminus connection:info $SITENAME.live --format=json| jq .mysql_command)
 MYSQL_STRING="${MYSQL_STRING%\"}"
 MYSQL_STRING="${MYSQL_STRING#\"}"
 
@@ -50,7 +44,7 @@ $MYSQL_STRING -e "SELECT TABLE_NAME, table_rows, data_length, index_length, roun
 #;";
 
 echo "Fetching Biggest Table Blobs:"
-$TERMINUS_PATH blob:columns $SITENAME.live
+$HOME/Projects/pantheon/terminus/bin/terminus blob:columns $SITENAME.live
 
 echo "Analyzing Slow Query Logs:"
   # Get Db server host and binding id.
@@ -66,7 +60,7 @@ echo "Analyzing Slow Query Logs:"
   done
 
   echo "Fetching Redis:"
-  REDIS_CLI=$($TERMINUS_PATH connection:info $SITENAME.live --format=json| jq .redis_command)
+  REDIS_CLI=$($HOME/Projects/pantheon/terminus/bin/terminus connection:info $SITENAME.live --format=json| jq .redis_command)
   REDIS_CLI="${REDIS_CLI%\"}"
   REDIS_CLI="${REDIS_CLI#\"}"
   $REDIS_CLI info
