@@ -2,8 +2,10 @@
 ORG_UUID=$1
 SITENAME=$2
 
+$TERMINUS_PATH=$HOME/Projects/pantheon/terminus/bin/terminus
+
 echo "Fetching URL"
-URL=$($HOME/Projects/pantheon/terminus/bin/terminus env:info $SITENAME.live --format=json| jq .domain)
+URL=$($TERMINUS_PATH env:info $SITENAME.live --format=json| jq .domain)
 URL="${URL%\"}"
 URL="${URL#\"}"
 echo "ENV URL:" $URL
@@ -21,21 +23,21 @@ echo "Running btool info:"
 ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'; btool;exit;bash --login'
 
 echo "Running Watchdog Logs:"
-$HOME/Projects/pantheon/terminus/bin/terminus remote:drush $SITENAME.live -- ws --count=500 | grep -i “error”
+$TERMINUS_PATH remote:drush $SITENAME.live -- ws --count=500 | grep -i “error”
 
 echo "Running Drupal Status:"
-$HOME/Projects/pantheon/terminus/bin/terminus remote:drush $SITENAME.live -- st
+$TERMINUS_PATH remote:drush $SITENAME.live -- st
 
 echo "Fetching Files Info:"
 ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'/files; du -h -d 1 .;exit;bash --login';
 ssh $APPSERVER_IP.panth.io -t 'cd /srv/bindings/'$APPSERVER_BINDING_ID'/files; find -maxdepth 1 -type d | while read -r dir; do printf "%s:\t" "$dir"; find "$dir" -type f | wc -l; done ;exit;bash --login'
 
 echo "Fetching New Relic Data:"
-$HOME/Projects/pantheon/terminus/bin/terminus newrelic-data:org $ORG_UUID
-$HOME/Projects/pantheon/terminus/bin/terminus newrelic-data:org $ORG_UUID --overview
+$TERMINUS_PATH newrelic-data:org $ORG_UUID
+$TERMINUS_PATH newrelic-data:org $ORG_UUID --overview
 
 echo "Fetching Heaviest Tables:"
-MYSQL_STRING=$($HOME/Projects/pantheon/terminus/bin/terminus connection:info $SITENAME.live --format=json| jq .mysql_command)
+MYSQL_STRING=$($TERMINUS_PATH connection:info $SITENAME.live --format=json| jq .mysql_command)
 MYSQL_STRING="${MYSQL_STRING%\"}"
 MYSQL_STRING="${MYSQL_STRING#\"}"
 
@@ -44,7 +46,7 @@ $MYSQL_STRING -e "SELECT TABLE_NAME, table_rows, data_length, index_length, roun
 #;";
 
 echo "Fetching Biggest Table Blobs:"
-$HOME/Projects/pantheon/terminus/bin/terminus blob:columns $SITENAME.live
+$TERMINUS_PATH blob:columns $SITENAME.live
 
 echo "Analyzing Slow Query Logs:"
   # Get Db server host and binding id.
@@ -60,7 +62,7 @@ echo "Analyzing Slow Query Logs:"
   done
 
   echo "Fetching Redis:"
-  REDIS_CLI=$($HOME/Projects/pantheon/terminus/bin/terminus connection:info $SITENAME.live --format=json| jq .redis_command)
+  REDIS_CLI=$($TERMINUS_PATH connection:info $SITENAME.live --format=json| jq .redis_command)
   REDIS_CLI="${REDIS_CLI%\"}"
   REDIS_CLI="${REDIS_CLI#\"}"
   $REDIS_CLI info
