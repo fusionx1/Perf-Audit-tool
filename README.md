@@ -6,6 +6,8 @@ This tool consolidates all the available tools for the performance audit, from T
 2. You need to have a working Terminus - https://pantheon.io/docs/terminus/install/
 3. In order to run the biggest blob in your database, you need to install the Terminus Debugging Tools plugin - https://github.com/pantheon-systems/terminus_debugging_tools 
 4. In order to run a New Relic report on the slowest performing sites, you need to install the New Relic data Terminus plugin - https://github.com/fusionx1/terminus-get-newrelic
+5. Working mysql client
+6. Working Yubi Key(Tested on gpg2)
 
 ## Installation
 
@@ -18,5 +20,5 @@ $ chmod +x ./init.sh
 ## Usage
 
 ```
-$ ./init.sh [SITENAME]
+$ ./init.sh [ORG_UUID][SITENAME]
 ```
