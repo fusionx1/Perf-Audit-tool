@@ -1,5 +1,5 @@
 # Perf-Audit-tool
-This tool consolidates all the available tools for the performance audit, from Terminus finding the org and site url, Redis, New Relic data, btool info, server logs, watchdogs, heaviest tables, slow query logs from master and slave db (for elite) with query digest, biggest blobs, and number of files in the files directory and how big they are. 
+This tool consolidates all the available tools for the performance audit, from Terminus finding the org and site url, Redis info, New Relic data, btool info, server logs, watchdogs, heaviest tables, slow query logs from master and slave db (for elite) with query digest, biggest blobs, and number of files in the files directory and how big they are. 
 
 ## Requirements
 1. Install jq. jq is a lightweight and flexible command-line JSON processor. - https://stedolan.github.io/jq/
@@ -8,6 +8,7 @@ This tool consolidates all the available tools for the performance audit, from T
 4. In order to run a New Relic report on the slowest performing sites, you need to install the New Relic data Terminus plugin - https://github.com/fusionx1/terminus-get-newrelic
 5. Working mysql client
 6. Working Yubi Key(Tested on gpg2)
+
 
 ## Installation
 
