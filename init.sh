@@ -2,7 +2,7 @@
 ORG_UUID=$1
 SITENAME=$2
 
-$TERMINUS_PATH=$HOME/Projects/pantheon/terminus/bin/terminus
+TERMINUS_PATH=$HOME/Projects/pantheon/terminus/bin/terminus
 
 echo "Fetching URL"
 URL=$($TERMINUS_PATH env:info $SITENAME.live --format=json| jq .domain)
