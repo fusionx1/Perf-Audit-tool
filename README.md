@@ -27,8 +27,8 @@ This tool consolidates all the available tools for the performance audit, from T
   ```
   npm install --save simple-headless-chrome
   ```  
-4. Turn on the Google Slides API Step 1-2 only - https://developers.google.com/slides/quickstart/python 
-   You may use this quide easier setup - https://docs.google.com/document/d/1kOz7pp7dN-6ISkh-vvVFotJH3J57Avuj9GjTSfyoY0I/edit
+4. Turn on the Google Slides API and Google Drive API
+   You may use this guide - https://docs.google.com/document/d/1kOz7pp7dN-6ISkh-vvVFotJH3J57Avuj9GjTSfyoY0I/edit
 
 6. Make sure shell scripts are executable
 
