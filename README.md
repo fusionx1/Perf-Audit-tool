@@ -28,13 +28,9 @@ This tool consolidates all the available tools for the performance audit, from T
   npm install --save simple-headless-chrome
   ```  
 4. Turn on the Google Slides API Step 1-2 only - https://developers.google.com/slides/quickstart/python 
-you may use this wizard - https://console.developers.google.com/start/api?id=slides.googleapis.com
+   You may use this quide easier setup - https://docs.google.com/document/d/1kOz7pp7dN-6ISkh-vvVFotJH3J57Avuj9GjTSfyoY0I/edit
 
-5. Enable Google Drive API - https://developers.google.com/drive/v3/web/enable-sdk#enable_the_drive_api
-
-6. Enabled Google Slide API - enable goog
-
-7. Make sure shell scripts are executable
+6. Make sure shell scripts are executable
 
 Perf-Audit-tool/init.sh and Perf-Audit-tool/nr_image_capture/newrelic_image_capture.sh
 ```
@@ -42,10 +38,8 @@ $ chmod +x ./init.sh
 $ chmod +x ./nr_image_capture/newrelic_image_capture.sh
 ```
 
-
-
 ## Usage
 
 ```
-$ ./init.sh [ORG_UUID][SITENAME]
+$ ./init.sh [ORG_UUID][SITENAME][YUBI_KEY] 
 ```
