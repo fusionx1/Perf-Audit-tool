@@ -27,35 +27,22 @@ This tool consolidates all the available tools for the performance audit, from T
   ```
   npm install --save simple-headless-chrome
   ```  
-4. Turn on the Google Slides API
+4. Turn on the Google Slides API Step 1-2 only - https://developers.google.com/slides/quickstart/python 
+you may use this wizard - https://console.developers.google.com/start/api?id=slides.googleapis.com
 
-  a. Use this wizard to create or select a project in the Google Developers Console and automatically turn on the API. Click Continue, then Go to credentials.
-  
-  b. On the Add credentials to your project page, click the Cancel button.
-  
-  c. At the top of the page, select the OAuth consent screen tab. Select an Email address, enter a Product name if not already set, and click the Save button.
-  
-  d. Select the Credentials tab, click the Create credentials button and select OAuth client ID.
-  
-  e. Select the application type Other, enter the name "Google Slides API Quickstart", and click the Create button.
+5. Enable Google Drive API - https://developers.google.com/drive/v3/web/enable-sdk#enable_the_drive_api
 
-  f. Click OK to dismiss the resulting dialog.
-  
-  g. Click the file_download (Download JSON) button to the right of the client ID.
-  
-  h. Move this file to your working directory and rename it client_secret.json.
-  
- 5. Install the Google Client Library by running the following command to install the library using pip:
- 
- ```
- pip install --upgrade google-api-python-client
- 
- ```
- 6. Make sure the shell script is executable
+6. Enabled Google Slide API - enable goog
 
+7. Make sure shell scripts are executable
+
+Perf-Audit-tool/init.sh and Perf-Audit-tool/nr_image_capture/newrelic_image_capture.sh
 ```
 $ chmod +x ./init.sh
+$ chmod +x ./nr_image_capture/newrelic_image_capture.sh
 ```
+
+
 
 ## Usage
 
