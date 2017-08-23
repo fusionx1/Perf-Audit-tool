@@ -59,7 +59,7 @@ def main():
     http = credentials.authorize(httplib2.Http())
     service = discovery.build('slides', 'v1', http=http)
 
-    presentationId = '1RPbBbRR51zB7gvWI00drQlhrfC_8BRVUA4pRiIdctjE'
+    presentationId = '1EAYk18WDjIG-zp_0vLm3CsfQh_i8eXc67Jo2O9C6Vuc'
     presentation = service.presentations().get(
         presentationId=presentationId).execute()
     slides = presentation.get('slides')
