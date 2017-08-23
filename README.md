@@ -29,6 +29,12 @@ This tool consolidates all the available tools for the performance audit, from T
   ```  
 4. Turn on the Google Slides API and Google Drive API
    You may use this guide - https://docs.google.com/document/d/1kOz7pp7dN-6ISkh-vvVFotJH3J57Avuj9GjTSfyoY0I/edit
+  
+5. Install python library 
+
+```
+pip install --upgrade google-api-python-client 
+```
 
 6. Make sure shell scripts are executable
 
